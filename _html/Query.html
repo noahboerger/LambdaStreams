@@ -1,0 +1,258 @@
+<html>
+<head>
+<title>Query.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #000080; font-weight: bold;}
+.s1 { color: #000000;}
+.s2 { color: #008000; font-weight: bold;}
+.s3 { color: #0000ff;}
+.s4 { color: #808080; font-style: italic;}
+.ln { color: #999999; font-weight: normal; font-style: normal; }
+</style>
+</head>
+<body bgcolor="#ffffff">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#c0c0c0" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+Query.java</font>
+</center></td></tr></table>
+<pre><a name="l1"><span class="ln">1    </span></a><span class="s0">import </span>java.io.BufferedWriter;
+<a name="l2"><span class="ln">2    </span></a><span class="s0">import </span>java.io.FileWriter;
+<a name="l3"><span class="ln">3    </span></a><span class="s0">import </span>java.io.IOException;
+<a name="l4"><span class="ln">4    </span></a><span class="s0">import </span>java.sql.*;
+<a name="l5"><span class="ln">5    </span></a>
+<a name="l6"><span class="ln">6    </span></a><span class="s0">public class </span>Query <span class="s0">implements </span>IQuery {
+<a name="l7"><span class="ln">7    </span></a>    <span class="s0">private </span>Connection connection;
+<a name="l8"><span class="ln">8    </span></a>    <span class="s0">private </span>String driverName = <span class="s2">&quot;jdbc:hsqldb:&quot;</span>;
+<a name="l9"><span class="ln">9    </span></a>    <span class="s0">private </span>String username = <span class="s2">&quot;sa&quot;</span>;
+<a name="l10"><span class="ln">10   </span></a>    <span class="s0">private </span>String password = <span class="s2">&quot;&quot;</span>;
+<a name="l11"><span class="ln">11   </span></a>    <span class="s0">private </span>BufferedWriter bufferedWriter;
+<a name="l12"><span class="ln">12   </span></a>
+<a name="l13"><span class="ln">13   </span></a>    <span class="s0">public static void </span>main(String... args) {
+<a name="l14"><span class="ln">14   </span></a>        Query query = <span class="s0">new </span>Query();
+<a name="l15"><span class="ln">15   </span></a>        query.startup();
+<a name="l16"><span class="ln">16   </span></a>
+<a name="l17"><span class="ln">17   </span></a>        query.executeSQL01();
+<a name="l18"><span class="ln">18   </span></a>        query.executeSQL02();
+<a name="l19"><span class="ln">19   </span></a>        query.executeSQL03();
+<a name="l20"><span class="ln">20   </span></a>        query.executeSQL04();
+<a name="l21"><span class="ln">21   </span></a>        query.executeSQL05();
+<a name="l22"><span class="ln">22   </span></a>        query.executeSQL06();
+<a name="l23"><span class="ln">23   </span></a>        query.executeSQL07();
+<a name="l24"><span class="ln">24   </span></a>        query.executeSQL08();
+<a name="l25"><span class="ln">25   </span></a>        query.executeSQL09();
+<a name="l26"><span class="ln">26   </span></a>        query.executeSQL10();
+<a name="l27"><span class="ln">27   </span></a>        query.executeSQL11();
+<a name="l28"><span class="ln">28   </span></a>        query.executeSQL12();
+<a name="l29"><span class="ln">29   </span></a>        query.executeSQL13();
+<a name="l30"><span class="ln">30   </span></a>        query.executeSQL14();
+<a name="l31"><span class="ln">31   </span></a>
+<a name="l32"><span class="ln">32   </span></a>        query.shutdown();
+<a name="l33"><span class="ln">33   </span></a>    }
+<a name="l34"><span class="ln">34   </span></a>
+<a name="l35"><span class="ln">35   </span></a>    <span class="s0">public void </span>startup() {
+<a name="l36"><span class="ln">36   </span></a>        <span class="s0">try </span>{
+<a name="l37"><span class="ln">37   </span></a>            Class.forName(<span class="s2">&quot;org.hsqldb.jdbcDriver&quot;</span>);
+<a name="l38"><span class="ln">38   </span></a>            String databaseURL = driverName + Configuration.instance.dataPath + <span class="s2">&quot;records.db&quot;</span>;
+<a name="l39"><span class="ln">39   </span></a>            connection = DriverManager.getConnection(databaseURL, username, password);
+<a name="l40"><span class="ln">40   </span></a>
+<a name="l41"><span class="ln">41   </span></a>            bufferedWriter = <span class="s0">new </span>BufferedWriter(<span class="s0">new </span>FileWriter(Configuration.instance.logPath + <span class="s2">&quot;query.log&quot;</span>));
+<a name="l42"><span class="ln">42   </span></a>        } <span class="s0">catch </span>(Exception e) {
+<a name="l43"><span class="ln">43   </span></a>            System.out.println(e.getMessage());
+<a name="l44"><span class="ln">44   </span></a>        }
+<a name="l45"><span class="ln">45   </span></a>    }
+<a name="l46"><span class="ln">46   </span></a>
+<a name="l47"><span class="ln">47   </span></a>    <span class="s0">public void </span>writeLogfile(String message) {
+<a name="l48"><span class="ln">48   </span></a>        <span class="s0">try </span>{
+<a name="l49"><span class="ln">49   </span></a>            bufferedWriter.append(message).append(<span class="s2">&quot;</span><span class="s0">\n</span><span class="s2">&quot;</span>);
+<a name="l50"><span class="ln">50   </span></a>        } <span class="s0">catch </span>(IOException ioe) {
+<a name="l51"><span class="ln">51   </span></a>            System.out.println(ioe.getMessage());
+<a name="l52"><span class="ln">52   </span></a>        }
+<a name="l53"><span class="ln">53   </span></a>    }
+<a name="l54"><span class="ln">54   </span></a>
+<a name="l55"><span class="ln">55   </span></a>    <span class="s0">public </span>String dump(ResultSet resultSet) {
+<a name="l56"><span class="ln">56   </span></a>        StringBuilder stringBuilder = <span class="s0">new </span>StringBuilder();
+<a name="l57"><span class="ln">57   </span></a>
+<a name="l58"><span class="ln">58   </span></a>        <span class="s0">try </span>{
+<a name="l59"><span class="ln">59   </span></a>            ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
+<a name="l60"><span class="ln">60   </span></a>            <span class="s0">int </span>maximumNumberColumns = resultSetMetaData.getColumnCount();
+<a name="l61"><span class="ln">61   </span></a>            <span class="s0">int </span>i;
+<a name="l62"><span class="ln">62   </span></a>            Object object;
+<a name="l63"><span class="ln">63   </span></a>
+<a name="l64"><span class="ln">64   </span></a>            <span class="s0">for </span>(; resultSet.next(); ) {
+<a name="l65"><span class="ln">65   </span></a>                <span class="s0">for </span>(i = <span class="s3">0</span>; i &lt; maximumNumberColumns; ++i) {
+<a name="l66"><span class="ln">66   </span></a>                    object = resultSet.getObject(i + <span class="s3">1</span>);
+<a name="l67"><span class="ln">67   </span></a>                    stringBuilder.append(object.toString() + <span class="s2">&quot; &quot;</span>);
+<a name="l68"><span class="ln">68   </span></a>                }
+<a name="l69"><span class="ln">69   </span></a>                stringBuilder.append(<span class="s2">&quot; </span><span class="s0">\n</span><span class="s2">&quot;</span>);
+<a name="l70"><span class="ln">70   </span></a>            }
+<a name="l71"><span class="ln">71   </span></a>
+<a name="l72"><span class="ln">72   </span></a>            <span class="s0">return </span>stringBuilder.toString();
+<a name="l73"><span class="ln">73   </span></a>        } <span class="s0">catch </span>(SQLException sqle) {
+<a name="l74"><span class="ln">74   </span></a>            System.out.println(sqle.getMessage());
+<a name="l75"><span class="ln">75   </span></a>        }
+<a name="l76"><span class="ln">76   </span></a>
+<a name="l77"><span class="ln">77   </span></a>        <span class="s0">return </span><span class="s2">&quot;-1&quot;</span>;
+<a name="l78"><span class="ln">78   </span></a>    }
+<a name="l79"><span class="ln">79   </span></a>
+<a name="l80"><span class="ln">80   </span></a>    <span class="s0">public synchronized void </span>queryDump(String sqlStatement) {
+<a name="l81"><span class="ln">81   </span></a>        <span class="s0">try </span>{
+<a name="l82"><span class="ln">82   </span></a>            Statement statement = connection.createStatement();
+<a name="l83"><span class="ln">83   </span></a>            ResultSet resultSet = statement.executeQuery(sqlStatement);
+<a name="l84"><span class="ln">84   </span></a>            writeLogfile(sqlStatement);
+<a name="l85"><span class="ln">85   </span></a>            writeLogfile(dump(resultSet));
+<a name="l86"><span class="ln">86   </span></a>            statement.close();
+<a name="l87"><span class="ln">87   </span></a>        } <span class="s0">catch </span>(SQLException sqle) {
+<a name="l88"><span class="ln">88   </span></a>            System.out.println(sqle.getMessage());
+<a name="l89"><span class="ln">89   </span></a>        }
+<a name="l90"><span class="ln">90   </span></a>    }
+<a name="l91"><span class="ln">91   </span></a>
+<a name="l92"><span class="ln">92   </span></a>    <span class="s4">// count</span>
+<a name="l93"><span class="ln">93   </span></a>    <span class="s0">public void </span>executeSQL01() {
+<a name="l94"><span class="ln">94   </span></a>        writeLogfile(<span class="s2">&quot;--- query 01 (count)&quot;</span>);
+<a name="l95"><span class="ln">95   </span></a>        String sqlStatement = <span class="s2">&quot;SELECT COUNT(*) FROM data&quot;</span>;
+<a name="l96"><span class="ln">96   </span></a>        queryDump(sqlStatement);
+<a name="l97"><span class="ln">97   </span></a>    }
+<a name="l98"><span class="ln">98   </span></a>
+<a name="l99"><span class="ln">99   </span></a>    <span class="s4">// count, where</span>
+<a name="l100"><span class="ln">100  </span></a>    <span class="s0">public void </span>executeSQL02() {
+<a name="l101"><span class="ln">101  </span></a>        writeLogfile(<span class="s2">&quot;--- query 02 (count, where)&quot;</span>);
+<a name="l102"><span class="ln">102  </span></a>        String sqlStatement = <span class="s2">&quot;SELECT COUNT(*) FROM data &quot; </span>+
+<a name="l103"><span class="ln">103  </span></a>                <span class="s2">&quot;WHERE serviceDesk = 8 AND type = 'w'&quot;</span>;
+<a name="l104"><span class="ln">104  </span></a>        queryDump(sqlStatement);
+<a name="l105"><span class="ln">105  </span></a>    }
+<a name="l106"><span class="ln">106  </span></a>
+<a name="l107"><span class="ln">107  </span></a>    <span class="s4">// count, where, in</span>
+<a name="l108"><span class="ln">108  </span></a>    <span class="s0">public void </span>executeSQL03() {
+<a name="l109"><span class="ln">109  </span></a>        writeLogfile(<span class="s2">&quot;--- query 03 (count, where, in)&quot;</span>);
+<a name="l110"><span class="ln">110  </span></a>        String sqlStatement = <span class="s2">&quot;SELECT COUNT(*) FROM data &quot; </span>+
+<a name="l111"><span class="ln">111  </span></a>                <span class="s2">&quot;WHERE serviceDesk = 4 AND shift = 1 AND type = 'm' &quot; </span>+
+<a name="l112"><span class="ln">112  </span></a>                <span class="s2">&quot;AND dayOfWeek IN ('fri','sat','sun')&quot;</span>;
+<a name="l113"><span class="ln">113  </span></a>        queryDump(sqlStatement);
+<a name="l114"><span class="ln">114  </span></a>    }
+<a name="l115"><span class="ln">115  </span></a>
+<a name="l116"><span class="ln">116  </span></a>    <span class="s4">// count, where, not in</span>
+<a name="l117"><span class="ln">117  </span></a>    <span class="s0">public void </span>executeSQL04() {
+<a name="l118"><span class="ln">118  </span></a>        writeLogfile(<span class="s2">&quot;--- query 04 (count, where, not in)&quot;</span>);
+<a name="l119"><span class="ln">119  </span></a>        String sqlStatement = <span class="s2">&quot;SELECT COUNT(*) FROM data &quot; </span>+
+<a name="l120"><span class="ln">120  </span></a>                <span class="s2">&quot;WHERE serviceDesk = 8 AND shift = 2 AND type = 'r' &quot; </span>+
+<a name="l121"><span class="ln">121  </span></a>                <span class="s2">&quot;AND dayOfWeek NOT IN ('mon','fri','sat')&quot;</span>;
+<a name="l122"><span class="ln">122  </span></a>        queryDump(sqlStatement);
+<a name="l123"><span class="ln">123  </span></a>    }
+<a name="l124"><span class="ln">124  </span></a>
+<a name="l125"><span class="ln">125  </span></a>    <span class="s4">// sum, where, in</span>
+<a name="l126"><span class="ln">126  </span></a>    <span class="s0">public void </span>executeSQL05() {
+<a name="l127"><span class="ln">127  </span></a>        writeLogfile(<span class="s2">&quot;--- query 05 (sum, where, in)&quot;</span>);
+<a name="l128"><span class="ln">128  </span></a>        String sqlStatement = <span class="s2">&quot;SELECT SUM(waitingTimeInMinutes) FROM data &quot; </span>+
+<a name="l129"><span class="ln">129  </span></a>                <span class="s2">&quot;WHERE serviceDesk IN (1,2,7,8) &quot; </span>+
+<a name="l130"><span class="ln">130  </span></a>                <span class="s2">&quot;AND shift = 1 AND type IN ('s','r') &quot; </span>+
+<a name="l131"><span class="ln">131  </span></a>                <span class="s2">&quot;AND dayOfWeek IN ('sat','sun')&quot;</span>;
+<a name="l132"><span class="ln">132  </span></a>        queryDump(sqlStatement);
+<a name="l133"><span class="ln">133  </span></a>    }
+<a name="l134"><span class="ln">134  </span></a>
+<a name="l135"><span class="ln">135  </span></a>    <span class="s4">// avg, where, not in</span>
+<a name="l136"><span class="ln">136  </span></a>    <span class="s0">public void </span>executeSQL06() {
+<a name="l137"><span class="ln">137  </span></a>        writeLogfile(<span class="s2">&quot;--- query 06 (avg, where, not in)&quot;</span>);
+<a name="l138"><span class="ln">138  </span></a>        String sqlStatement = <span class="s2">&quot;SELECT AVG(waitingTimeInMinutes) FROM data &quot; </span>+
+<a name="l139"><span class="ln">139  </span></a>                <span class="s2">&quot;WHERE serviceDesk IN (1,2,3) &quot; </span>+
+<a name="l140"><span class="ln">140  </span></a>                <span class="s2">&quot;AND shift IN (1,4) AND type = 'm' &quot; </span>+
+<a name="l141"><span class="ln">141  </span></a>                <span class="s2">&quot;AND dayOfWeek NOT IN ('mon','fri')&quot;</span>;
+<a name="l142"><span class="ln">142  </span></a>        queryDump(sqlStatement);
+<a name="l143"><span class="ln">143  </span></a>    }
+<a name="l144"><span class="ln">144  </span></a>
+<a name="l145"><span class="ln">145  </span></a>    <span class="s4">// id, where, in, order by desc limit</span>
+<a name="l146"><span class="ln">146  </span></a>    <span class="s0">public void </span>executeSQL07() {
+<a name="l147"><span class="ln">147  </span></a>        writeLogfile(<span class="s2">&quot;--- query 07 (id, where, in, order by desc limit)&quot;</span>);
+<a name="l148"><span class="ln">148  </span></a>        String sqlStatement = <span class="s2">&quot;SELECT serviceDesk FROM data &quot; </span>+
+<a name="l149"><span class="ln">149  </span></a>                <span class="s2">&quot;WHERE shift = 2 AND type = 'r' &quot; </span>+
+<a name="l150"><span class="ln">150  </span></a>                <span class="s2">&quot;AND dayOfWeek IN ('sat','sun') AND destination = 'b' &quot; </span>+
+<a name="l151"><span class="ln">151  </span></a>                <span class="s2">&quot;AND waitingTimeInMinutes = 10 &quot; </span>+
+<a name="l152"><span class="ln">152  </span></a>                <span class="s2">&quot;ORDER BY dayOfWeek DESC LIMIT 3&quot;</span>;
+<a name="l153"><span class="ln">153  </span></a>        queryDump(sqlStatement);
+<a name="l154"><span class="ln">154  </span></a>    }
+<a name="l155"><span class="ln">155  </span></a>
+<a name="l156"><span class="ln">156  </span></a>    <span class="s4">// id, where, in, order by desc, order by asc</span>
+<a name="l157"><span class="ln">157  </span></a>    <span class="s0">public void </span>executeSQL08() {
+<a name="l158"><span class="ln">158  </span></a>        writeLogfile(<span class="s2">&quot;--- query 08 (id, where, in, order by desc, order by asc)&quot;</span>);
+<a name="l159"><span class="ln">159  </span></a>        String sqlStatement = <span class="s2">&quot;SELECT serviceDesk FROM data &quot; </span>+
+<a name="l160"><span class="ln">160  </span></a>                <span class="s2">&quot;WHERE shift = 1 AND type = 'm' &quot; </span>+
+<a name="l161"><span class="ln">161  </span></a>                <span class="s2">&quot;AND dayOfWeek = 'mon' AND destination IN ('a','f') &quot; </span>+
+<a name="l162"><span class="ln">162  </span></a>                <span class="s2">&quot;AND waitingTimeInMinutes = 10 &quot; </span>+
+<a name="l163"><span class="ln">163  </span></a>                <span class="s2">&quot;AND premiumService = 'yes' &quot; </span>+
+<a name="l164"><span class="ln">164  </span></a>                <span class="s2">&quot;ORDER BY serviceDesk DESC, destination&quot;</span>;
+<a name="l165"><span class="ln">165  </span></a>        queryDump(sqlStatement);
+<a name="l166"><span class="ln">166  </span></a>    }
+<a name="l167"><span class="ln">167  </span></a>
+<a name="l168"><span class="ln">168  </span></a>    <span class="s4">// count, group by</span>
+<a name="l169"><span class="ln">169  </span></a>    <span class="s0">public void </span>executeSQL09() {
+<a name="l170"><span class="ln">170  </span></a>        writeLogfile(<span class="s2">&quot;--- query 09 (count, group by)&quot;</span>);
+<a name="l171"><span class="ln">171  </span></a>        String sqlStatement = <span class="s2">&quot;SELECT dayOfWeek,COUNT(*) FROM data &quot; </span>+
+<a name="l172"><span class="ln">172  </span></a>                <span class="s2">&quot;GROUP BY dayOfWeek&quot;</span>;
+<a name="l173"><span class="ln">173  </span></a>        queryDump(sqlStatement);
+<a name="l174"><span class="ln">174  </span></a>    }
+<a name="l175"><span class="ln">175  </span></a>
+<a name="l176"><span class="ln">176  </span></a>    <span class="s4">// count, where, group by</span>
+<a name="l177"><span class="ln">177  </span></a>    <span class="s0">public void </span>executeSQL10() {
+<a name="l178"><span class="ln">178  </span></a>        writeLogfile(<span class="s2">&quot;--- query 10 (count, where, group by)&quot;</span>);
+<a name="l179"><span class="ln">179  </span></a>        String sqlStatement = <span class="s2">&quot;SELECT destination,COUNT(*) FROM data &quot; </span>+
+<a name="l180"><span class="ln">180  </span></a>                <span class="s2">&quot;WHERE type = 'm' &quot; </span>+
+<a name="l181"><span class="ln">181  </span></a>                <span class="s2">&quot;AND premiumService = 'yes' &quot; </span>+
+<a name="l182"><span class="ln">182  </span></a>                <span class="s2">&quot;GROUP BY destination&quot;</span>;
+<a name="l183"><span class="ln">183  </span></a>        queryDump(sqlStatement);
+<a name="l184"><span class="ln">184  </span></a>    }
+<a name="l185"><span class="ln">185  </span></a>
+<a name="l186"><span class="ln">186  </span></a>    <span class="s4">// count, where, in, group by</span>
+<a name="l187"><span class="ln">187  </span></a>    <span class="s0">public void </span>executeSQL11() {
+<a name="l188"><span class="ln">188  </span></a>        writeLogfile(<span class="s2">&quot;--- query 11 (count, where, in, group by)&quot;</span>);
+<a name="l189"><span class="ln">189  </span></a>        String sqlStatement = <span class="s2">&quot;SELECT dayOfWeek,COUNT(*) FROM data &quot; </span>+
+<a name="l190"><span class="ln">190  </span></a>                <span class="s2">&quot;WHERE shift = 3 AND destination = 'c' &quot; </span>+
+<a name="l191"><span class="ln">191  </span></a>                <span class="s2">&quot;AND type IN ('s','r') &quot; </span>+
+<a name="l192"><span class="ln">192  </span></a>                <span class="s2">&quot;GROUP BY dayOfWeek&quot;</span>;
+<a name="l193"><span class="ln">193  </span></a>        queryDump(sqlStatement);
+<a name="l194"><span class="ln">194  </span></a>    }
+<a name="l195"><span class="ln">195  </span></a>
+<a name="l196"><span class="ln">196  </span></a>    <span class="s4">// count, where, not in, group by</span>
+<a name="l197"><span class="ln">197  </span></a>    <span class="s0">public void </span>executeSQL12() {
+<a name="l198"><span class="ln">198  </span></a>        writeLogfile(<span class="s2">&quot;--- query 12 (count, where, not in, group by)&quot;</span>);
+<a name="l199"><span class="ln">199  </span></a>        String sqlStatement = <span class="s2">&quot;SELECT type,COUNT(*) FROM data &quot; </span>+
+<a name="l200"><span class="ln">200  </span></a>                <span class="s2">&quot;WHERE destination = 'b' AND shift = '4' &quot; </span>+
+<a name="l201"><span class="ln">201  </span></a>                <span class="s2">&quot;AND dayOfWeek NOT IN ('tue','wed') &quot; </span>+
+<a name="l202"><span class="ln">202  </span></a>                <span class="s2">&quot;GROUP BY type&quot;</span>;
+<a name="l203"><span class="ln">203  </span></a>        queryDump(sqlStatement);
+<a name="l204"><span class="ln">204  </span></a>    }
+<a name="l205"><span class="ln">205  </span></a>
+<a name="l206"><span class="ln">206  </span></a>    <span class="s4">// sum, where, not in, in, group by</span>
+<a name="l207"><span class="ln">207  </span></a>    <span class="s0">public void </span>executeSQL13() {
+<a name="l208"><span class="ln">208  </span></a>        writeLogfile(<span class="s2">&quot;--- query 13 (sum, where, not in, in, group by)&quot;</span>);
+<a name="l209"><span class="ln">209  </span></a>        String sqlStatement = <span class="s2">&quot;SELECT serviceDesk,SUM(price) FROM data &quot; </span>+
+<a name="l210"><span class="ln">210  </span></a>                <span class="s2">&quot;WHERE type NOT IN ('s','r') &quot; </span>+
+<a name="l211"><span class="ln">211  </span></a>                <span class="s2">&quot;AND shift IN (1,2) &quot; </span>+
+<a name="l212"><span class="ln">212  </span></a>                <span class="s2">&quot;AND premiumService = 'yes' &quot; </span>+
+<a name="l213"><span class="ln">213  </span></a>                <span class="s2">&quot;GROUP BY serviceDesk&quot;</span>;
+<a name="l214"><span class="ln">214  </span></a>        queryDump(sqlStatement);
+<a name="l215"><span class="ln">215  </span></a>    }
+<a name="l216"><span class="ln">216  </span></a>
+<a name="l217"><span class="ln">217  </span></a>    <span class="s4">// avg, where, in, in, group by</span>
+<a name="l218"><span class="ln">218  </span></a>    <span class="s0">public void </span>executeSQL14() {
+<a name="l219"><span class="ln">219  </span></a>        writeLogfile(<span class="s2">&quot;--- query 14 (avg, where, in, in, group by)&quot;</span>);
+<a name="l220"><span class="ln">220  </span></a>        String sqlStatement = <span class="s2">&quot;SELECT shift,AVG(waitingTimeInMinutes) FROM data &quot; </span>+
+<a name="l221"><span class="ln">221  </span></a>                <span class="s2">&quot;WHERE premiumService = 'no' &quot; </span>+
+<a name="l222"><span class="ln">222  </span></a>                <span class="s2">&quot;AND dayOfWeek IN ('fri','mon') AND shift IN (1,4) &quot; </span>+
+<a name="l223"><span class="ln">223  </span></a>                <span class="s2">&quot;GROUP BY shift&quot;</span>;
+<a name="l224"><span class="ln">224  </span></a>        queryDump(sqlStatement);
+<a name="l225"><span class="ln">225  </span></a>    }
+<a name="l226"><span class="ln">226  </span></a>
+<a name="l227"><span class="ln">227  </span></a>    <span class="s0">public void </span>shutdown() {
+<a name="l228"><span class="ln">228  </span></a>        <span class="s0">try </span>{
+<a name="l229"><span class="ln">229  </span></a>            Statement statement = connection.createStatement();
+<a name="l230"><span class="ln">230  </span></a>            statement.execute(<span class="s2">&quot;SHUTDOWN&quot;</span>);
+<a name="l231"><span class="ln">231  </span></a>            connection.close();
+<a name="l232"><span class="ln">232  </span></a>            bufferedWriter.close();
+<a name="l233"><span class="ln">233  </span></a>        } <span class="s0">catch </span>(Exception e) {
+<a name="l234"><span class="ln">234  </span></a>            System.out.println(e.getMessage());
+<a name="l235"><span class="ln">235  </span></a>        }
+<a name="l236"><span class="ln">236  </span></a>    }
+<a name="l237"><span class="ln">237  </span></a>}</pre>
+</body>
+</html>

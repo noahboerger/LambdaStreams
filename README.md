@@ -1,1 +1,1 @@
-# LambdaStreams
+Lambdas
