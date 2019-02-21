@@ -1,10 +1,7 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.net.SecureCacheResponse;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -41,75 +38,80 @@ public class Application {
 
     // count
     public void executeSQL01() {
-        long count = records.stream().count();
+        long count = records.stream()
+                .count();
         System.out.println("1: " + count);
-    }
-
-    /*
-    // count
-    public void executeSQL01() {
-        writeLogfile("--- query 01 (count)");
-        String sqlStatement = "SELECT COUNT(*) FROM data";
-        queryDump(sqlStatement);
     }
 
     // count, where
     public void executeSQL02() {
-        writeLogfile("--- query 02 (count, where)");
-        String sqlStatement = "SELECT COUNT(*) FROM data " +
-                "WHERE serviceDesk = 8 AND type = 'w'";
-        queryDump(sqlStatement);
+        long count = records.stream()
+                .filter(x -> x.getServiceDesk() == 8)
+                .filter(x -> x.getTicket().getType().equals("w"))
+                .count();
+        System.out.println("2: " + count);
     }
 
     // count, where, in
     public void executeSQL03() {
-        writeLogfile("--- query 03 (count, where, in)");
-        String sqlStatement = "SELECT COUNT(*) FROM data " +
-                "WHERE serviceDesk = 4 AND shift = 1 AND type = 'm' " +
-                "AND dayOfWeek IN ('fri','sat','sun')";
-        queryDump(sqlStatement);
+        long count = records.stream()
+                .filter(x -> x.getServiceDesk() == 4)
+                .filter(x -> x.getShift() == 1)
+                .filter(x -> x.getTicket().getType().equals("m"))
+                .filter(x -> x.getDayOfWeek().equals("fri") || x.getDayOfWeek().equals("sat") || x.getDayOfWeek().equals("sun"))
+                .count();
+        System.out.println("3: " + count);
     }
 
     // count, where, not in
     public void executeSQL04() {
-        writeLogfile("--- query 04 (count, where, not in)");
-        String sqlStatement = "SELECT COUNT(*) FROM data " +
-                "WHERE serviceDesk = 8 AND shift = 2 AND type = 'r' " +
-                "AND dayOfWeek NOT IN ('mon','fri','sat')";
-        queryDump(sqlStatement);
+        long count = records.stream()
+                .filter(x -> x.getServiceDesk() == 8)
+                .filter(x -> x.getShift() == 2)
+                .filter(x -> x.getTicket().getType().equals("r"))
+                .filter(x -> !x.getDayOfWeek().equals("mon") || !x.getDayOfWeek().equals("fri") || !x.getDayOfWeek().equals("sat"))
+                .count();
+        System.out.println("4: " + count);
     }
 
     // sum, where, in
     public void executeSQL05() {
-        writeLogfile("--- query 05 (sum, where, in)");
-        String sqlStatement = "SELECT SUM(waitingTimeInMinutes) FROM data " +
-                "WHERE serviceDesk IN (1,2,7,8) " +
-                "AND shift = 1 AND type IN ('s','r') " +
-                "AND dayOfWeek IN ('sat','sun')";
-        queryDump(sqlStatement);
+        long count = records.stream()
+                .filter(x -> x.getServiceDesk() == 1 || x.getServiceDesk() == 2 || x.getServiceDesk() == 7 || x.getServiceDesk() == 8)
+                .filter(x -> x.getShift() == 1)
+                .filter(x -> x.getTicket().getType().equals("s") || x.getTicket().getType().equals("r"))
+                .filter(x -> !x.getDayOfWeek().equals("sat") || !x.getDayOfWeek().equals("sun"))
+                .mapToInt(Record::getWaitingTimeInMinutes).sum();
+        System.out.println("5: " + count);
     }
 
     // avg, where, not in
     public void executeSQL06() {
-        writeLogfile("--- query 06 (avg, where, not in)");
-        String sqlStatement = "SELECT AVG(waitingTimeInMinutes) FROM data " +
-                "WHERE serviceDesk IN (1,2,3) " +
-                "AND shift IN (1,4) AND type = 'm' " +
-                "AND dayOfWeek NOT IN ('mon','fri')";
-        queryDump(sqlStatement);
+        double average = records.stream()
+                .filter(x -> x.getServiceDesk() == 1 || x.getServiceDesk() == 2 || x.getServiceDesk() == 3)
+                .filter(x -> x.getShift() == 1 || x.getShift() == 4)
+                .filter(x -> x.getTicket().getType().equals("m"))
+                .filter(x -> !x.getDayOfWeek().equals("mon") || !x.getDayOfWeek().equals("fri"))
+                .mapToInt(Record::getWaitingTimeInMinutes).average().getAsDouble();
+        System.out.println("6: " + average);
     }
 
     // id, where, in, order by desc limit
     public void executeSQL07() {
-        writeLogfile("--- query 07 (id, where, in, order by desc limit)");
-        String sqlStatement = "SELECT serviceDesk FROM data " +
-                "WHERE shift = 2 AND type = 'r' " +
-                "AND dayOfWeek IN ('sat','sun') AND destination = 'b' " +
-                "AND waitingTimeInMinutes = 10 " +
-                "ORDER BY dayOfWeek DESC LIMIT 3";
-        queryDump(sqlStatement);
+        List<Integer> list = records.stream()
+                .filter(x -> x.getShift() == 2)
+                .filter(x -> x.getTicket().getType().equals("r"))
+                .filter(x -> x.getDayOfWeek().equals("sat") || x.getDayOfWeek().equals("sun"))
+                .filter(x -> x.getTicket().getDestination().equals("b"))
+                .filter(x -> x.getWaitingTimeInMinutes() == 10)
+                .sorted(Comparator.comparing(Record::getDayOfWeek).reversed())
+                .limit(3)
+                .map(Record::getServiceDesk)
+                .collect(Collectors.toList());
+        System.out.println("7: " + list);
     }
 
+    /*
     // id, where, in, order by desc, order by asc
     public void executeSQL08() {
         writeLogfile("--- query 08 (id, where, in, order by desc, order by asc)");
@@ -182,27 +184,7 @@ public class Application {
     }
      */
 
-//    // count, where
-//    public void executeSQL02() {
-//        long count = records.stream()
-//                .filter(x -> x.getSeverity().equals("major"))
-//                .filter(x -> x.getAttackType().equals("e"))
-//                .filter(x -> x.getSource() <= 2)
-//                .filter(x -> x.getShift() == 4)
-//                .count();
-//        System.out.println("2: " + count);
-//    }
-//
-//    // count, where, in
-//    public void executeSQL03() {
-//        long count = records.stream()
-//                .filter(x -> x.getSeverity().equals("major") || x.getSeverity().equals("critical"))
-//                .filter(x -> x.getAttackType().equals("b"))
-//                .filter(x -> x.getSource() == 4)
-//                .filter(x -> x.getShift() >= 3)
-//                .count();
-//        System.out.println("3: " + count);
-//    }
+
 //
 //    // count, where, not in
 //    public void executeSQL04() {
@@ -333,14 +315,15 @@ public class Application {
 
     public void execute() {
         records = loadRecords();
+        System.out.println(records.get(10000));
         executeSQL01();
-       /* executeSQL02();
+        executeSQL02();
         executeSQL03();
         executeSQL04();
         executeSQL05();
         executeSQL06();
         executeSQL07();
-        executeSQL08();
+       /* executeSQL08();
         executeSQL09();
         executeSQL10();
         executeSQL11();
