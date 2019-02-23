@@ -17,14 +17,6 @@ public class Record {
         this.premiumService = premiumService;
     }
 
-    public String toString() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(id).append(";").append(waitingTimeInMinutes).append(";").append(serviceDesk).append(";").append(shift).append(";");
-        stringBuilder.append(dayOfWeek).append(";").append(ticket.getDestination()).append(";");
-        stringBuilder.append(ticket.getType()).append(";").append(ticket.getPrice()).append(";").append(premiumService);
-        return stringBuilder.toString();
-    }
-
     public int getId() {
         return id;
     }
@@ -51,5 +43,13 @@ public class Record {
 
     public String getPremiumService() {
         return premiumService;
+    }
+
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(id).append(";").append(waitingTimeInMinutes).append(";").append(serviceDesk).append(";").append(shift).append(";");
+        stringBuilder.append(dayOfWeek).append(";").append(ticket.getDestination()).append(";");
+        stringBuilder.append(ticket.getType()).append(";").append(ticket.getPrice()).append(";").append(premiumService);
+        return stringBuilder.toString();
     }
 }
